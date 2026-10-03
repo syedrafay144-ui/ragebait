@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ragebait: a language that is just English</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#ece9f3;--ink:#1d1030;--panel:#fff;--rage:#e5271b;--mute:#6b6280;--line:#cfc8e0;--err:#fff1ef}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#150d22;--ink:#ece6fb;--panel:#201533;--mute:#a79cc2;--line:#3a2c57;--err:#3a1512}}
+:root[data-theme="dark"]{--bg:#150d22;--ink:#ece6fb;--panel:#201533;--mute:#a79cc2;--line:#3a2c57;--err:#3a1512}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Bricolage Grotesque",system-ui,sans-serif}
+header{padding:28px 20px 8px;max-width:1200px;margin:auto}
+h1{font-size:clamp(2.2rem,6vw,4rem);line-height:1;margin:0;font-weight:800;letter-spacing:-.03em}
+h1 b{color:var(--rage)}
+header p{max-width:60ch;color:var(--mute);margin:10px 0 0}
+main{max-width:1200px;margin:auto;padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:820px){main{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;min-width:0}
+.bar{padding:8px 14px;border-bottom:1px solid var(--line);font-weight:800;font-size:.9rem;color:var(--mute)}
+textarea{display:block;width:100%;height:440px;border:0;resize:vertical;padding:14px;background:transparent;color:var(--ink);font:13.5px/1.7 "JetBrains Mono",ui-monospace,monospace;outline:none}
+textarea:focus-visible{box-shadow:inset 0 0 0 2px var(--rage)}
+#stage{min-height:440px;padding:24px;background:#fff;color:#222;font-family:Georgia,serif;overflow:auto}
+#stage button{padding:10px 18px;border:0;border-radius:4px;background:#444;color:#fff;font:inherit;cursor:pointer;margin:6px 6px 6px 0}
+#stage h1{margin:.3em 0;letter-spacing:0;font-size:2em}
+#stage a{color:inherit}
+#stage img{max-width:100%}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+#errs{grid-column:1/-1;padding:0;list-style:none;margin:0}
+#errs li{background:var(--err);border-left:5px solid var(--rage);padding:10px 14px;margin-bottom:6px;border-radius:4px;font-size:.95rem}
+#errs li:first-child{font-weight:800}
+.ref{grid-column:1/-1;padding:14px 18px}
+.ref h2{margin:0 0 10px;font-size:1.2rem}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+.wrap{overflow-x:auto}
+td,th{text-align:left;padding:7px 10px;border-top:1px solid var(--line);vertical-align:top}
+th{white-space:nowrap;color:var(--rage)}
+code{font:12.5px "JetBrains Mono",monospace;background:var(--bg);padding:1px 5px;border-radius:3px}
+@media(prefers-reduced-motion:reduce){#stage *{animation:none!important}}
+</style>
+</head>
+<body>
+<header>
+<h1>Rage<b>bait</b></h1>
+<p>A programming language that is only English. No HTML, no CSS. Write grammatical sentences on the left and the website builds itself on the right. Break a grammar rule and Ragebait gets angry.</p>
+</header>
+<main>
+<section class="card"><div class="bar">Your Ragebait program</div>
+<textarea id="src" spellcheck="false" aria-label="Ragebait program">Title the page "Rage Cafe".
+The page is dark and centered.
+Create a huge orange heading called Welcome saying "Welcome to Rage Cafe!".
+Create a small gray paragraph saying "Coffee so strong it argues back." slowly.
+Remember a number called Cups as 0.
+Create a big heading called Tally.
+Show Cups in the Tally.
+Create a rounded green button called Order saying "Order a coffee".
+Create a rounded red button called Reset saying "Start over".
+When the Order is clicked, add 1 to Cups.
+When the Reset is clicked, set Cups to 0 then make the Tally white.
+If Cups is more than 3, make the Tally red.
+Create a link going to "https://example.com" saying "Our other cafe".
+Stop reading this at once!</textarea></section>
+<section class="card"><div class="bar" id="bar">Preview</div><div id="stage"></div></section>
+<ul id="errs" aria-live="polite"></ul>
+<section class="card ref"><h2>The grammar</h2><div class="wrap"><table>
+<tr><th>Nouns</th><td>The things on the page: <code>heading</code> <code>subheading</code> <code>paragraph</code> <code>button</code> <code>link</code> <code>image</code> <code>box</code> <code>list</code> <code>item</code> <code>line</code></td></tr>
+<tr><th>Adjectives</th><td>How things look: colours (<code>red blue green orange purple pink yellow teal gray black white</code>) and <code>big huge small bold italic centered rounded wide padded glowing dark light underlined spaced</code></td></tr>
+<tr><th>Articles</th><td><code>a</code> / <code>an</code> introduce something new (and must agree: <code>an</code> before a vowel). <code>the</code> refers to something that already exists.</td></tr>
+<tr><th>Proper nouns</th><td>Names start with a capital: <code>called Tally</code>. Use <code>the Tally</code> later.</td></tr>
+<tr><th>Verbs</th><td><code>Create/Make/Add/Place/Build a …</code> · <code>Make the X …</code> · <code>Change the X to say "…"</code> · <code>Show Count in the X</code> · <code>Remember a number called N as 0</code> · <code>Add 1 to N</code> · <code>Subtract 1 from N</code> · <code>Set N to 5</code></td></tr>
+<tr><th>Prepositions</th><td><code>inside the Box</code> puts a thing in another. <code>going to "url"</code>, <code>showing "image"</code>, <code>saying "text"</code>. You add <i>to</i>, you subtract <i>from</i>.</td></tr>
+<tr><th>Adverbs</th><td>End a sentence with <code>slowly</code> <code>gently</code> <code>quickly</code> (fade in) or <code>loudly</code> (shout).</td></tr>
+<tr><th>Clauses</th><td><code>When the X is clicked, …</code> · <code>If N is more than 3, …</code> · <code>then</code> joins actions.</td></tr>
+<tr><th>Punctuation</th><td>Capital letter to start, full stop to end. An exclamation mark shouts (bold, capitals). A question mark is an error: Ragebait gives orders, not questions.</td></tr>
+</table></div></section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const NOUNS={heading:'h1',subheading:'h2',paragraph:'p',button:'button',link:'a',image:'img',box:'div',list:'ul',item:'li',line:'hr'};
+const COL={red:'#e5484d',blue:'#3b82f6',green:'#22a559',orange:'#f08a24',purple:'#8b5cf6',pink:'#ec4899',yellow:'#f5c518',teal:'#14a3a3',gray:'#8a8f98',black:'#111',white:'#fff'};
+const ADJ={big:'font-size:1.6em',huge:'font-size:2.6em',small:'font-size:.8em',bold:'font-weight:700',italic:'font-style:italic',centered:'text-align:center',rounded:'border-radius:14px',wide:'width:100%',padded:'padding:16px',glowing:'box-shadow:0 0 24px currentColor',dark:'background:#14161a;color:#eee',light:'background:#fff;color:#222',underlined:'text-decoration:underline',spaced:'margin:14px 0'};
+const ADV={slowly:'2.5s',gently:'1.5s',quickly:'.3s',loudly:0};
+let R;
+const get=n=>{if(!R.els[n])throw`there is no "${n}" yet. Use "a" to introduce a thing before you say "the ${n}".`;return R.els[n]};
+function adjs(str){return str.replace(/,/g,' ').split(/\s+/).filter(w=>w&&w!='and').map(a=>{if(!COL[a]&&!ADJ[a])throw`"${a}" is not an adjective I know.`;return a})}
+function paint(el,list,boxy){list.forEach(a=>{if(COL[a]){if(boxy){el.style.background=COL[a];el.style.color=(a=='yellow'||a=='white')?'#111':'#fff'}else el.style.color=COL[a]}else{el.style.cssText+=';'+ADJ[a];if(a=='centered')el.style.display=el.tagName=='BUTTON'?'block':el.style.display}})}
+function sync(){R.binds.forEach(b=>b.el.textContent=R.vars[b.v]);R.rules.forEach(r=>{const x=R.vars[r.v];if(r.op=='more'?x>r.n:x<r.n)exec(r.act,r.S,false)})}
+function needVar(n){if(!(n in R.vars))throw`I do not know a number called ${n}. Remember it first.`}
+function exec(s,S,loud){
+ let m;s=s.trim();s=s[0].toLowerCase()+s.slice(1);
+ if(m=s.match(/^title the page §(\d+)§$/)){$('bar').textContent=S[m[1]];return}
+ if(m=s.match(/^when the ([A-Z]\w*) is clicked, (.+)$/)){const el=get(m[1]),acts=m[2].split(/ then /);el.addEventListener('click',()=>{try{acts.forEach(a=>exec(a,S,false));sync()}catch(e){show([ 'Click failed: '+(e.message||e)])}});return}
+ if(m=s.match(/^if ([A-Z]\w*) is (more|less) than (-?\d+), (.+)$/)){needVar(m[1]);R.rules.push({v:m[1],op:m[2],n:+m[3],act:m[4],S});return}
+ if(m=s.match(/^remember a number called ([A-Z]\w*) as (-?\d+)$/)){R.vars[m[1]]=+m[2];return}
+ if(m=s.match(/^(add|subtract) (\d+) (to|from) ([A-Z]\w*)$/)){
+  if(m[1]=='add'&&m[3]!='to')throw'you add "to", not "from".';
+  if(m[1]=='subtract'&&m[3]!='from')throw'you subtract "from", not "to".';
+  needVar(m[4]);R.vars[m[4]]+=(m[1]=='add'?1:-1)*m[2];return}
+ if(m=s.match(/^set ([A-Z]\w*) to (-?\d+)$/)){needVar(m[1]);R.vars[m[1]]=+m[2];return}
+ if(m=s.match(/^(?:show|display) ([A-Z]\w*) in the ([A-Z]\w*)$/)){needVar(m[1]);R.binds.push({v:m[1],el:get(m[2])});return}
+ if(m=s.match(/^change the ([A-Z]\w*) to say §(\d+)§$/)){get(m[1]).textContent=S[m[2]];return}
+ if(m=s.match(/^(?:create|make|add|place|build) (a|an) (.+)$/)){
+  let rest=m[2].replace(/,/g,' ').trim(),adv=null;
+  const lw=rest.split(' ').pop();if(lw in ADV){adv=lw;rest=rest.slice(0,-lw.length).trim()}
+  const w=rest.split(' ').filter(x=>x!='and');let i=0;const list=[];
+  while(i<w.length&&!NOUNS[w[i]]){if(!/^[a-z]+$/.test(w[i])||(!COL[w[i]]&&!ADJ[w[i]]))throw`"${w[i]}" is not an adjective or a noun I know.`;list.push(w[i++])}
+  if(i>=w.length)throw'every thing needs a noun, such as heading, paragraph or button.';
+  const noun=w[i],first=w[0],vowel=/^[aeiou]/.test(first);
+  if(m[1]=='a'&&vowel)throw`say "an ${first}", not "a ${first}".`;
+  if(m[1]=='an'&&!vowel)throw`say "a ${first}", not "an ${first}".`;
+  let tail=w.slice(i+1).join(' ');
+  if(/called [a-z]/.test(tail))throw'names are proper nouns, so they start with a capital letter.';
+  const pick=(re)=>{const k=tail.match(re);if(k)tail=tail.replace(re,' ').replace(/\s+/g,' ').trim();return k};
+  const nm=pick(/called ([A-Z]\w*)/),tx=pick(/(?:saying|that says) §(\d+)§/),hr=pick(/going to §(\d+)§/),im=pick(/showing §(\d+)§/),ins=pick(/inside (?:the )?([A-Z]\w*)/);
+  if(tail)throw`I did not expect "${tail}" in this sentence.`;
+  if(nm&&R.els[nm[1]])throw`${nm[1]} already exists. Names are proper nouns, so each is used once.`;
+  const par=ins?get(ins[1]):$('stage'),el=document.createElement(NOUNS[noun]);
+  if(tx)el.textContent=S[tx[1]];
+  if(hr)el.href=S[hr[1]];
+  if(im)el.src=S[im[1]];
+  paint(el,list,['button','div','ul'].includes(NOUNS[noun]));
+  if(loud||adv=='loudly'){el.style.fontWeight='800';el.style.textTransform='uppercase'}
+  if(adv&&ADV[adv])el.style.animation=`fade ${ADV[adv]} ease both`;
+  par.appendChild(el);if(nm)R.els[nm[1]]=el;return}
+ if(m=s.match(/^(?:make|paint) the ([A-Z]\w*|page) (.+)$/)||(m=s.match(/^the ([A-Z]\w*|page) is (.+)$/))){
+  const el=m[1]=='page'?$('stage'):get(m[1]);paint(el,adjs(m[2]),['BUTTON','DIV','UL'].includes(el.tagName));return}
+ throw'I do not understand this sentence. Ragebait speaks in orders, such as: Create a big red heading saying "Hi".'}
+function show(e){const u=$('errs');u.innerHTML='';if(!e.length)return;
+ const h=document.createElement('li');h.textContent='Ragebait is furious. Fix your grammar.';u.appendChild(h);
+ e.forEach(t=>{const l=document.createElement('li');l.textContent=t;u.appendChild(l)})}
+function run(){
+ const st=$('stage');st.innerHTML='';st.removeAttribute('style');$('bar').textContent='Preview';
+ R={vars:{},els:{},binds:[],rules:[]};
+ const src=$('src').value,list=[],errs=[];let cur='',q=false;
+ for(let i=0;i<src.length;i++){const c=src[i];cur+=c;if(c=='"')q=!q;
+  else if(!q&&'.!?'.includes(c)&&(i+1==src.length||/\s/.test(src[i+1]))){list.push(cur.trim());cur=''}}
+ if(cur.trim())list.push(cur.trim()+'\0');
+ list.forEach((raw,n)=>{const tag='Sentence '+(n+1)+' ("'+raw.replace('\0','').slice(0,34)+(raw.length>34?'…':'')+'"): ';
+  try{
+   if(raw.endsWith('\0'))throw'it never ends. Finish it with a full stop or an exclamation mark.';
+   const end=raw.slice(-1);if(end=='?')throw'it is a question. Ragebait only gives orders.';
+   let s=raw.slice(0,-1).trim();
+   if(!/^[A-Z]/.test(s))throw'it must start with a capital letter.';
+   const S=[];s=s.replace(/"[^"]*"/g,x=>{S.push(x.slice(1,-1));return'§'+(S.length-1)+'§'});
+   exec(s,S,end=='!')
+  }catch(e){errs.push(tag+(typeof e=='string'?e:'internal error: '+e.message))}});
+ try{sync()}catch(e){errs.push(String(e.message||e))}
+ show(errs)}
+$('src').addEventListener('input',run);run();
+</script>
+</body>
+</html>
